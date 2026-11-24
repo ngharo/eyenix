@@ -71,6 +71,7 @@ Item {
       onRead: function(line) {
         var parsed = Model.parseStatus(line)
         if (!parsed) return
+        root.heard = true
         root.missing = false
         root.state = parsed
       }
@@ -78,16 +79,37 @@ Item {
     onExited: function(exitCode) {
       // It is meant to run for ever. If it stopped, the binary is gone or
       // broken; say so and look again in a while.
-      root.state = Model.empty()
-      root.missing = true
-      retry.restart()
+      root.giveUp()
     }
+  }
+
+  // True once the follower has printed a status. A command that cannot be
+  // started at all never exits either, so silence is how a missing app shows:
+  // the status arrives at once when the app is there.
+  property bool heard: false
+
+  function giveUp() {
+    heard = false
+    state = Model.empty()
+    missing = true
+    retry.restart()
+  }
+
+  Timer {
+    id: silence
+    interval: 3000
+    running: true
+    onTriggered: if (!root.heard) root.giveUp()
   }
 
   Timer {
     id: retry
     interval: 5000
-    onTriggered: follower.running = true
+    onTriggered: {
+      follower.running = false
+      follower.running = true
+      silence.restart()
+    }
   }
 
   Process {

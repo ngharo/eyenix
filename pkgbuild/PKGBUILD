@@ -4,7 +4,7 @@ pkgrel=1
 pkgdesc='Set up a Tobii Eye Tracker 5, see where you are looking, and use it in games'
 arch=('x86_64')
 license=('MIT' 'Apache-2.0')
-depends=('qt6-base' 'qt6-declarative' 'qt6-wayland' 'layer-shell-qt' 'libusb' 'onnxruntime-cpu' 'opencv')
+depends=('qt6-base' 'qt6-declarative' 'qt6-wayland' 'layer-shell-qt' 'libusb' 'onnxruntime' 'opencv')
 makedepends=('gcc' 'make' 'pkgconf' 'eigen')
 # The game bridge is built with Go. One already on the PATH (mise, a manual
 # install) is as good as the package.

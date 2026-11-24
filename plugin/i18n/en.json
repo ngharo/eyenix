@@ -1,6 +1,7 @@
 {
   "title": "Eye tracking",
-  "status.missing": "The eyenix app is not installed",
+  "status.missing": "Eyenix is not installed",
+  "missing.help": "This panel needs the eyenix app. Install the eyenix package from the AUR, for example with: yay -S eyenix",
   "status.off": "Off",
   "status.searching": "Looking for the tracker…",
   "status.noTracker": "No tracker connected",
@@ -29,5 +30,6 @@
   "action.align": "Align screen",
   "action.align.tip": "Tell the tracker where the screen is",
   "tooltip.on": "Eye tracking is on",
-  "tooltip.off": "Eye tracking is off"
+  "tooltip.off": "Eye tracking is off",
+  "tooltip.missing": "Eyenix is not installed"
 }

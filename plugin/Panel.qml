@@ -22,7 +22,8 @@ Panel {
   readonly property var state: service.state
   readonly property string statusText: Model.withGame(strings.t(Model.statusKey(state, service.missing)), state.games)
   // The app's own complaint first, then whatever the last command said.
-  readonly property string problemText: state.notice !== "" ? state.notice
+  readonly property string problemText: service.missing ? ""
+      : state.notice !== "" ? state.notice
       : service.lastError !== "" ? service.lastError
       : state.games.problem !== "" ? state.games.problem
       : !state.connected ? state.problem : ""
@@ -79,7 +80,7 @@ Panel {
     // Lit in the accent color while the tracker is running, dim otherwise.
     foreground: service.tracking ? Commons.Color.accent : root.barForeground
     dimmed: !service.tracking
-    tooltipText: strings.t(service.tracking ? "tooltip.on" : "tooltip.off")
+    tooltipText: strings.t(service.missing ? "tooltip.missing" : service.tracking ? "tooltip.on" : "tooltip.off")
     onPressed: function(buttonCode) {
       if (buttonCode === Qt.RightButton) service.toggleOverlay()
       else root.toggle()
@@ -129,6 +130,18 @@ Panel {
               font.pixelSize: Style.font.display
             }
           }
+        }
+
+        // Without the app this panel can do nothing: say how to get it.
+        Text {
+          textFormat: Text.PlainText
+          visible: service.missing
+          width: parent.width
+          text: strings.t("missing.help")
+          color: root.urgent
+          font.family: root.fontFamily
+          font.pixelSize: Style.font.bodySmall
+          wrapMode: Text.WordWrap
         }
 
         Text {
