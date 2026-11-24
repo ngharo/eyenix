@@ -2,25 +2,29 @@
 
 ![Eyenix with a tracker connected](docs/screenshot.png)
 
-Set up a Tobii Eye Tracker 5 on Linux and see where you are looking. Eyenix
-talks to the tracker directly over USB, with no Tobii software involved, and
-runs on Wayland.
+Use a Tobii Eye Tracker 5 on Linux: set it up, see where you are looking, and
+get head and eye tracking in games that support Tobii trackers. Eyenix talks
+to the tracker directly over USB, with no Tobii software involved, and runs
+on Wayland.
 
-It does three things:
+It does four things:
 
 1. **Align** tells the tracker where your screen is. You move two lines until
    they sit above the two marks on the tracker.
 2. **Calibrate** fits the tracker to your eyes. You look at seven dots.
 3. **Show gaze** draws a circle where you are looking, over the whole desktop.
    Clicks and keys pass through it.
+4. **Game mode** lets games that support Tobii trackers use this one, under
+   Wine or Proton. See [Games](#games).
 
 Calibrations are kept as named profiles, so glasses and contacts, or two
 people, can each have their own. Alignment and profiles are saved in
 `~/.config/eyenix` and sent to the tracker each time it connects.
 
-The app only runs while it has something to show: its window, the gaze point,
-or an alignment or calibration. When none of those is up it exits, which
-releases the tracker and lets it go idle.
+The app only runs while it has something to do: its window, the gaze point,
+an alignment or calibration, or game mode. When none of those is up it exits,
+which releases the tracker and lets it go idle. With only game mode on it
+stays in the background, and holds the tracker only while a game is running.
 
 ## Install
 
@@ -29,8 +33,13 @@ bin/install
 ```
 
 This builds an Arch package and installs it with `makepkg -fsi`: the binary,
-the launcher entry, the icon, and a udev rule that lets you open the tracker
-without root. Replug the tracker after the first install so the rule applies.
+the launcher entry, the icon, the game helper and face models that game mode
+uses, and a udev rule that lets you open the tracker without root. Replug the
+tracker after the first install so the rule applies.
+
+Building needs Go, for the game helper. One already on your `PATH` is used;
+otherwise the `go` package is installed along with the other build
+dependencies.
 
 To build and run without installing: `bin/build`, then `build/eyenix`. You
 then need the rule in `udev/70-eyenix.rules` in `/etc/udev/rules.d/` yourself.
@@ -50,9 +59,17 @@ update, `omarchy restart shell` loads the new code.
 - The eye icon lights up in the accent color while eye tracking is running.
 - **Show gaze** turns the gaze point on and off. Right-clicking the icon does
   the same.
+- **Game mode** turns [game mode](#games) on and off. Underneath, it says
+  what is happening: waiting for a game, or which game is using head
+  tracking, eye tracking or both. Left on, it comes back by itself after a
+  login.
 - **Calibration profile** switches profile.
 - **Calibrate** redoes the current profile, **New profile** calibrates into a
   new one, and **Align screen** starts alignment.
+
+If the `eyenix` app is removed while the plugin stays in the bar, the panel
+says that Eyenix is not installed and how to get it, and its controls are
+switched off. It starts working again by itself once the app is back.
 
 Remove it with `omarchy plugin disable ngharo.eyenix`.
 
