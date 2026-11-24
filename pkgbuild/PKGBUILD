@@ -1,0 +1,33 @@
+pkgname=eyenix
+pkgver=1.0.0
+pkgrel=1
+pkgdesc='Set up a Tobii Eye Tracker 5, see where you are looking, and use it in games'
+arch=('x86_64')
+license=('MIT' 'Apache-2.0')
+depends=('qt6-base' 'qt6-declarative' 'qt6-wayland' 'layer-shell-qt' 'libusb' 'onnxruntime-cpu' 'opencv')
+makedepends=('gcc' 'make' 'pkgconf' 'eigen')
+# The game bridge is built with Go. One already on the PATH (mise, a manual
+# install) is as good as the package.
+command -v go >/dev/null 2>&1 || makedepends+=('go')
+source=()
+sha256sums=()
+
+build() {
+  cd "$startdir/.."
+  ./bin/build
+}
+
+package() {
+  cd "$startdir/.."
+  install -Dm755 build/eyenix "$pkgdir/usr/bin/eyenix"
+  # Game integration: the helper started inside a game's Wine prefix, and the
+  # face models head tracking runs on.
+  install -Dm644 build/eyenix-bridge.exe "$pkgdir/usr/lib/eyenix/eyenix-bridge.exe"
+  install -Dm644 -t "$pkgdir/usr/share/eyenix/models" models/face_detector.onnx models/face_landmarks_detector.onnx
+  install -Dm644 LICENSE "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+  install -Dm644 -t "$pkgdir/usr/share/licenses/$pkgname" licenses/Apache-2.0.txt THIRD-PARTY-NOTICES.md
+  install -Dm644 "$startdir/eyenix.svg" "$pkgdir/usr/share/icons/hicolor/scalable/apps/eyenix.svg"
+  install -Dm644 "$startdir/eyenix.desktop" "$pkgdir/usr/share/applications/eyenix.desktop"
+  # Lets the logged-in user open the tracker without root.
+  install -Dm644 udev/70-eyenix.rules "$pkgdir/usr/lib/udev/rules.d/70-eyenix.rules"
+}

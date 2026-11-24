@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Eyenix
+Comment=Set up a Tobii Eye Tracker 5 and see where you are looking
+Exec=eyenix
+Icon=eyenix
+Terminal=false
+Categories=Utility;
+StartupWMClass=eyenix

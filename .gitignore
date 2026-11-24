@@ -1,0 +1,10 @@
+/build/
+/pkgbuild/pkg/
+/pkgbuild/src/
+*.pkg.tar.*
+# USB captures hold the tracker's serial number and calibration data.
+/captures/
+# Reference checkout of github.com/njmill/tobii-linux.
+/tobii-linux/
+/.venv/
+__pycache__/

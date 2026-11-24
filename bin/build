@@ -1,0 +1,17 @@
+#!/bin/sh
+set -eu
+
+ROOT="$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)"
+mkdir -p "$ROOT/build"
+cd "$ROOT/build"
+
+qmake6 "$ROOT/eyenix.pro"
+make -j"$(nproc)"
+
+# The helper that runs inside a game's Wine prefix. Go cross-compiles it to a
+# Windows program with no extra toolchain and no downloads.
+cd "$ROOT/bridge"
+GOOS=windows GOARCH=amd64 CGO_ENABLED=0 GOFLAGS=-mod=mod \
+    go build -trimpath -ldflags='-s -w' -o "$ROOT/build/eyenix-bridge.exe" .
+
+echo "Built $ROOT/build/eyenix and $ROOT/build/eyenix-bridge.exe"

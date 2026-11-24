@@ -1,0 +1,18 @@
+<RCC>
+    <qresource prefix="/">
+        <file alias="Main.qml">Main.qml</file>
+        <file alias="AlignView.qml">AlignView.qml</file>
+        <file alias="CalibrateView.qml">CalibrateView.qml</file>
+        <file alias="GazeOverlay.qml">GazeOverlay.qml</file>
+        <file alias="KeyCap.qml">KeyCap.qml</file>
+        <file alias="TaskWindow.qml">TaskWindow.qml</file>
+        <file alias="i18n/en.json">i18n/en.json</file>
+    </qresource>
+    <qresource prefix="/plugin">
+        <file alias="manifest.json">../plugin/manifest.json</file>
+        <file alias="Panel.qml">../plugin/Panel.qml</file>
+        <file alias="Service.qml">../plugin/Service.qml</file>
+        <file alias="Model.js">../plugin/Model.js</file>
+        <file alias="i18n/en.json">../plugin/i18n/en.json</file>
+    </qresource>
+</RCC>

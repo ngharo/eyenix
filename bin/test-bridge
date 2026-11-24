@@ -1,0 +1,37 @@
+#!/bin/sh
+# Runs eyenix-bridge.exe under a real Wine against a stand-in for a game.
+#
+#   bin/test-bridge /path/to/wine [prefix]
+#
+# The prefix defaults to a scratch one under ~/.cache; a game's own prefix is
+# never needed. Prints what the stand-in saw and exits non-zero if it missed
+# anything.
+set -eu
+
+ROOT="$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)"
+WINE="${1:?usage: bin/test-bridge /path/to/wine [prefix]}"
+export WINEPREFIX="${2:-$HOME/.cache/eyenix-wineprobe/pfx}"
+export WINEDEBUG=-all WINEDLLOVERRIDES="mscoree,mshtml=;winemenubuilder.exe=d"
+PORT=4399
+
+"$ROOT/bin/build" >/dev/null
+mkdir -p "$ROOT/build/tests" "$(dirname "$WINEPREFIX")"
+(cd "$ROOT/bridge" && GOOS=windows GOARCH=amd64 CGO_ENABLED=0 \
+    go build -tags fakegame -o "$ROOT/build/tests/fakegame.exe" .)
+
+# What the app would send: a head pose thirty times a second.
+python3 - "$PORT" <<'PY' &
+import socket, struct, sys, time
+s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+end = time.time() + 60
+while time.time() < end:
+    s.sendto(b"EYNX" + struct.pack("<I6f", 3, -12.5, 30.25, 615.0, 0.1, -0.2, 0.05), ("127.0.0.1", int(sys.argv[1])))
+    time.sleep(0.03)
+PY
+SENDER=$!
+"$WINE" "$ROOT/build/eyenix-bridge.exe" -serial IS5FF-TEST -pose-port "$PORT" \
+    -display-width 2560 -display-height 1440 >/dev/null 2>&1 &
+BRIDGE=$!
+trap 'kill "$SENDER" "$BRIDGE" 2>/dev/null || true' EXIT
+
+"$WINE" "$ROOT/build/tests/fakegame.exe" 2>/dev/null

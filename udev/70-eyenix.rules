@@ -1,0 +1,2 @@
+# Tobii Eye Tracker 5: let the logged-in user open the device.
+SUBSYSTEM=="usb", ATTR{idVendor}=="2104", ATTR{idProduct}=="0313", TAG+="uaccess"
